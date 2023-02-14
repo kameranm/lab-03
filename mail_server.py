@@ -24,11 +24,17 @@ def load_mail() -> List[Dict[str, str]]:
 
 def save_mail(mail: List[Dict[str, str]]) -> None:
     """TODO: fill out this docstring (using the load_mail docstring as a guide)
+	What method does: This saves mail into a list from the json file
+	Its arguments are: the list of dictionaries called mail
+	returns: Nothing
     """
     thisdir.joinpath('mail_db.json').write_text(json.dumps(mail, indent=4))
 
 def add_mail(mail_entry: Dict[str, str]) -> str:
     """TODO: fill out this docstring (using the load_mail docstring as a guide)
+	What method does: This function adds the dictionary to the list of mail. It appends the mail entry, assigns an id for the entry and saves the list of mail to the json. 
+	Its arguments are: the mail in the json file already
+	It returns: a new string
     """
     mail = load_mail()
     mail.append(mail_entry)
@@ -38,6 +44,9 @@ def add_mail(mail_entry: Dict[str, str]) -> str:
 
 def delete_mail(mail_id: str) -> bool:
     """TODO: fill out this docstring (using the load_mail docstring as a guide)
+	What method does: this function checks the mail_id entered and if it matches any of the ids found in the string, ti will delete it and save to the json file
+	Its arguments are: the string of mail_id 
+	It returns: a boolean: true if the mail was deleted and false if it wasn't found and deleted
     """
     mail = load_mail()
     for i, entry in enumerate(mail):
@@ -50,6 +59,9 @@ def delete_mail(mail_id: str) -> bool:
 
 def get_mail(mail_id: str) -> Optional[Dict[str, str]]:
     """TODO: fill out this docstring (using the load_mail docstring as a guide)
+	What the method does: this function takes in a mail id and searches if the list  has the id entered, if it does it will print out that id	
+	Returns: it either returns a dictionary or none 
+	parameters: the string mail_id  
     """
     mail = load_mail()
     for entry in mail:
@@ -60,6 +72,9 @@ def get_mail(mail_id: str) -> Optional[Dict[str, str]]:
 
 def get_inbox(recipient: str) -> List[Dict[str, str]]:
     """TODO: fill out this docstring (using the load_mail docstring as a guide)
+	What the method does: it loads in the mail from the json and checks if it has the recipient that was entered as input. If it does, it will return the emails that have the recipient connected to it  
+	Parameters: the string recipient
+	Returns:  the emails that are connected to the input recipient
     """
     mail = load_mail()
     inbox = []
@@ -71,6 +86,9 @@ def get_inbox(recipient: str) -> List[Dict[str, str]]:
 
 def get_sent(sender: str) -> List[Dict[str, str]]:
     """TODO: fill out this docstring (using the load_mail docstring as a guide)
+	What the method does:  This function loads in mail from the json file. It checks if the list has any senders the same as the inputted sender string. If it does it will return the emails that have that sender. 
+	Parameters: the string called sender
+	Returns: a list of dictionaries that have emails connected to the sender
     """
     mail = load_mail()
     sent = []
@@ -107,7 +125,9 @@ def delete_mail_route(mail_id: str):
         bool: True if the mail was deleted, False otherwise
     """
     # TODO: implement this function
-    pass # remove this line
+    res = jsonify({'deleted': delete_mail(mail_id)})
+    res.status_code = 200
+    return res
 
 @app.route('/mail/<mail_id>', methods=['GET'])
 def get_mail_route(mail_id: str):
@@ -142,7 +162,10 @@ def get_inbox_route(recipient: str):
 # TODO: implement a rout e to get all mail entries for a sender
 # HINT: start with soemthing like this:
 #   @app.route('/mail/sent/<sender>', ...)
-
-
+@app.route('/mail/sent/<sender>', methods = ['GET'])
+def get_sent_route(sender: str):
+    res = jsonify(get_sent(sender))
+    res.status_code = 200
+    return res
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
